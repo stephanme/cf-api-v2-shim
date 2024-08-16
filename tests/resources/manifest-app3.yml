@@ -1,0 +1,15 @@
+applications:
+- name: app3
+  path: ./app3
+  buildpacks:
+  - https://github.com/cloudfoundry/staticfile-buildpack.git#v1.6.15
+  memory: 64M
+  random-route: true
+  health-check-type: http
+  health-check-http-endpoint: /
+  health-check-interval: 15
+  health-check-timeout: 300
+  command: "$HOME/boot.sh"
+  env:
+    env1: value1
+    env2: value2

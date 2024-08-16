@@ -1,0 +1,9 @@
+{
+    "cfapi_url": "https://api.cf",
+    "uaa_url": "https://uaa.cf",
+    "shim_url": "http://localhost:8080",
+    "username": "gets space developer rights in <org_name>/<space_name>",
+    "password": "****",
+    "org_name": "org in which test spaces are created",
+    "space_name": "cfapiv2shimtest"
+}

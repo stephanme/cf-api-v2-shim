@@ -1,0 +1,10 @@
+.DS_store
+tests/
+__pycache__/
+.cfignore
+.gitignore
+.flake8
+pyproject.toml
+requirements-dev.txt
+README*
+manifest.yml

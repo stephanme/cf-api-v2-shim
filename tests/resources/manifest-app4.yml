@@ -1,0 +1,8 @@
+applications:
+- name: app4
+  memory: 64M
+  random-route: true
+  port: 
+  docker:
+    image: nginx:stable-perl
+

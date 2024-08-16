@@ -1,0 +1,13 @@
+---
+applications:
+- name: cfapiv2shim
+  buildpacks:
+  - python_buildpack
+  memory: 128M
+  # routes:
+  # - route: cfapiv2shim.<domain>
+  health-check-type: http
+  health_check_http_endpoint: /health
+  command: python -m shim
+  env:
+    CFG_PROXY_V3: false
