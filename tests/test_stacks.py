@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 class StacksTest(ShimTestCase):
     @classmethod
     def setUpClass(cls):
-        res = cls.config.session.get(f"{cls.config.cfapi_url}/v3/stacks?default=true")
+        ShimTestCase.setUpClass()
+        res = cls.session.get(f"{cls.cfapi_url}/v3/stacks?default=true")
         cls.default_stack_guid = res.json()["resources"][0]["guid"]
 
     def test_v2_get_stack(self):

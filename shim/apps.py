@@ -191,7 +191,6 @@ def v2_get_app(guid):
     return flask.make_response(v2_app, v3_app_res.status_code, cfapi_response_headers(v3_app_res.headers))
 
 
-# TODO inline-relations-depth
 # v2 apps endpoint is based on processes not apps - impacts sort order
 @app.route("/v2/apps")
 def v2_get_apps():

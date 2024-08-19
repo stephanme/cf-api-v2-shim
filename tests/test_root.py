@@ -5,13 +5,17 @@ logger = logging.getLogger(__name__)
 
 
 class RootTest(ShimTestCase):
+    @classmethod
+    def setUpClass(cls):
+        ShimTestCase.setUpClass()
+
     def test_root(self):
         (v2_json, shim_json) = self.run_v2_shim_get("/")
 
-        self.assertEqual(shim_json["links"]["self"]["href"], self.config.shim_url)
-        self.assertEqual(shim_json["links"]["cloud_controller_v2"]["href"], f"{self.config.shim_url}/v2")
+        self.assertEqual(shim_json["links"]["self"]["href"], RootTest.shim_url)
+        self.assertEqual(shim_json["links"]["cloud_controller_v2"]["href"], f"{RootTest.shim_url}/v2")
 
-        self.assertEqual(v2_json["links"]["cloud_controller_v2"]["href"], f"{self.config.cfapi_url}/v2")
+        self.assertEqual(v2_json["links"]["cloud_controller_v2"]["href"], f"{RootTest.cfapi_url}/v2")
 
         del shim_json["links"]["self"]["href"]
         del shim_json["links"]["cloud_controller_v2"]["href"]

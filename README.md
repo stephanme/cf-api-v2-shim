@@ -9,11 +9,13 @@ Basic idea is to implement the shim as stateless application that can be deploye
 ## Implemented v2 endpoints
 
 - (root)
-- `/v2/info `
-- `/v2/stacks`
-- `/v2/stacks/:guid`
-- `/v2/apps`
-- `/v2/apps/:guid`
+- `GET /v2/apps`
+- `GET /v2/apps/:guid`
+- `GET /v2/info`
+- `GET /v2/spaces`
+- `GET /v2/spaces/:guid`
+- `GET /v2/stacks`
+- `GET /v2/stacks/:guid`
 
 All v2 endpoints that are not yet shimmed are simply forwarded as-is to the underlying CF API.
 
@@ -22,6 +24,7 @@ All v2 endpoints that are not yet shimmed are simply forwarded as-is to the unde
 - [x] translation of a simple GET (`/v2/stacks/:guid`)
 - [x] translation of a complex GET (`/v2/apps/:guid`)
 - [x] list endpoints with pagination and sorting (`/v2/apps`)
+- [x] list endpoints with non-matching query parameters (`/v2/spaces?q=app_guid|developer_guid`)
 - [ ] summary endpoint
 - [ ] modifying endpoints (POST, PATCH, DELETE)
 - [ ] asynchronous endpoint
@@ -36,6 +39,7 @@ All v2 endpoints that are not yet shimmed are simply forwarded as-is to the unde
   - exceptions when calling CF API
   - error aggregation when multiple v3 requests are involved
   - provide std CF API error responses for errors in shim
+- [ ] url length restrictions on query params (translation of v2 to v3 may lead to very long guid lists)
 
 ## Out of Scope
 
@@ -64,7 +68,7 @@ List of interesting observations like inconsistencies or ideas for improving v3:
 - apps sort order: v2 by process id; v3 by app id
 - v3: order_by=id is not possible but it is the default sort order -> not possible to have initial sort order descending (workaround: `-created_at`)
 - v3 pagination: total_results = 0 if page is too high (should return correct total results)
-- v3: `GET /v3/apps` should allow to include env_vars and app feature flags.
+- v3: `GET /v3/apps` should allow to include env_vars and app feature flags. Similar for space feature flags.
 
 ## Development
 

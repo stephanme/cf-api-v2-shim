@@ -19,14 +19,34 @@ def cfapi_response_headers(headers: dict) -> dict:
 def pagination_url_v3_to_v2(url: str, v2_params: MultiDict) -> str:
     v3_parsed_url = urllib.parse.urlparse(url)
     qs = urllib.parse.parse_qs(v3_parsed_url.query)
-    order_dir = "desc" if "order_by" in qs and qs["order_by"][0].startswith("-") else "asc"
-    # TODO: unclear how to handle v2 order-by (not supported for every endpoint)
+    
+    order_dir = "asc"
+    order_by = ""
+    if "order_by" in qs:
+        order_by = qs.get("order_by")[0]
+        if order_by.startswith("-"):
+            order_dir = "desc"
+            order_by = order_by[1:]
+        if order_by.startswith("+"):
+            order_by = order_by[1:]
+        # v2: order-direction=desc -> v3: order_by=-created_at -> no v2 order-by param
+        if order_by == "created_at":
+            order_by = ""
+    # v3 doesn't know order_by id
+    if v2_params.get("order-by", "") == "id":
+        order_by = "id"
+
     page = qs["page"][0]
     per_page = qs["per_page"][0]
     q = ""
     for q_param in v2_params.getlist("q"):
         q += f"&q={q_param}"
-    v2_url = f"{v3_parsed_url.path}?order-direction={order_dir}&page={page}{q}&results-per-page={per_page}"
+
+    if order_by:
+        v2_url = f"{v3_parsed_url.path}?order-by={order_by}&order-direction={order_dir}&page={page}{q}&results-per-page={per_page}"
+    else:
+        v2_url = f"{v3_parsed_url.path}?order-direction={order_dir}&page={page}{q}&results-per-page={per_page}"
+
     return f"/v2{v2_url[3:]}"
 
 
@@ -45,10 +65,12 @@ def pagination_params_v2_to_v3(v2_params: MultiDict) -> dict:
         v3_params["per_page"] = v2_params["results-per-page"]
     if "page" in v2_params:
         v3_params["page"] = v2_params["page"]
-    # TODO: unclear how to handle v2 order-by (not supported for every endpoint)
-    if "order-direction" in v2_params:
-        if v2_params["order-direction"] == "desc":
-            v3_params["order_by"] = "-created_at"
+    order_by = v2_params.get("order-by", "id")
+    order_by = "" if order_by == "id" else order_by
+    order_by = "-" + order_by if "order-direction" in v2_params and v2_params["order-direction"] == "desc" else order_by
+    order_by = "-created_at" if order_by == "-" else order_by
+    if order_by:
+        v3_params["order_by"] = order_by
     return v3_params
 
 

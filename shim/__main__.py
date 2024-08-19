@@ -33,6 +33,7 @@ app = flask.Flask(__name__)
 # import modules with route definitions
 import shim.root  # noqa: F401
 import shim.apps  # noqa: F401
+import shim.spaces  # noqa: F401
 import shim.stacks  # noqa: F401
 
 
