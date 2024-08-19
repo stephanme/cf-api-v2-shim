@@ -30,7 +30,35 @@ def root():
 
 @app.route("/v2/info")
 def v2_info():
-    return forward_to_cfapi()
+    with requests.Session() as session:
+        session.headers.update(cfapi_request_headers(flask.request.headers))
+        session.allow_redirects = False
+        root_res = session.get(f"{cfapi_url}/")
+        root_res.raise_for_status()
+        v3_info_res = session.get(f"{cfapi_url}/v3/info")
+        v3_info_res.raise_for_status()
+        root = root_res.json()
+        v3_info = v3_info_res.json()
+
+    v2_info = {
+        "name": v3_info["name"],
+        "build": v3_info["build"],
+        "support": "",  # TODO
+        "version": v3_info["version"],
+        "description": v3_info["description"],
+        "authorization_endpoint": root["links"]["login"]["href"],
+        "token_endpoint": root["links"]["uaa"]["href"],
+        "min_cli_version": None if not v3_info["cli_version"]["minimum"] else v3_info["cli_version"]["minimum"],
+        "min_recommended_cli_version": None if not v3_info["cli_version"]["recommended"] else v3_info["cli_version"]["recommended"],
+        "app_ssh_endpoint": root["links"]["app_ssh"]["href"],
+        "app_ssh_host_key_fingerprint": root["links"]["app_ssh"]["meta"]["host_key_fingerprint"],
+        "app_ssh_oauth_client": root["links"]["app_ssh"]["meta"]["oauth_client"],
+        "doppler_logging_endpoint": root["links"]["logging"]["href"],
+        "api_version": root["links"]["cloud_controller_v2"]["meta"]["version"] if root["links"]["cloud_controller_v2"] else "2.237.0",  # TODO: define a v2 version for foundations with disabled/removed v2
+        "osbapi_version": "2.15",  # TODO: missing in v3 info
+        # "user": ""  TODO: user info not available in v3 info, could probably decode jwt token if available        
+    }
+    return flask.make_response(v2_info, v3_info_res.status_code, cfapi_response_headers(v3_info_res.headers))
 
 
 @app.route("/v2", defaults={"path": ""})

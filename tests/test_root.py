@@ -25,7 +25,7 @@ class RootTest(ShimTestCase):
         del v2_json["links"]["cloud_controller_v3"]["href"]
         self.assertDict(v2_json, shim_json)
 
-    # as example of a proxied endpoint
     def test_v2_info(self):
         (v2_json, shim_json) = self.run_v2_shim_get("/v2/info")
+        shim_json["user"] = v2_json["user"]  # TODO: user info not available in v3 info, could probably decode jwt token if available
         self.assertDict(v2_json, shim_json)

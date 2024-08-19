@@ -69,6 +69,7 @@ List of interesting observations like inconsistencies or ideas for improving v3:
 - v3: order_by=id is not possible but it is the default sort order -> not possible to have initial sort order descending (workaround: `-created_at`)
 - v3 pagination: total_results = 0 if page is too high (should return correct total results)
 - v3: `GET /v3/apps` should allow to include env_vars and app feature flags. Similar for space feature flags.
+- `/v2/info` lists user (if authenticated) and osbapi version, not available in `/v3/info` + `/`
 
 ## Development
 
